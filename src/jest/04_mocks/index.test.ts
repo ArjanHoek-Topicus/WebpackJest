@@ -1,26 +1,40 @@
-import { forEach } from ".";
+import { fetchUserById, forEach } from ".";
+import axios from "axios";
 
-it("mock callback", () => {
-    const mockedCallback = jest.fn((x) => 10 + x);
+jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-    forEach([0, 5], mockedCallback);
+const mockCallback = jest.fn((x) => x * 10);
 
-    expect(mockedCallback.mock.calls.length).toBe(2);
+test("mock callback", () => {
+    forEach([1, 2], mockCallback);
 
-    expect(mockedCallback.mock.calls[0][0]).toBe(0);
+    expect(mockCallback.mock.calls).toHaveLength(2);
 
-    expect(mockedCallback.mock.results[0].value).toBe(10);
-    expect(mockedCallback.mock.results[1].value).toBe(15);
+    expect(mockCallback.mock.calls[0][0]).toBe(1);
+
+    expect(mockCallback.mock.results[0].value).toBe(10);
+    expect(mockCallback.mock.results[1].value).toBe(20);
 });
 
-it("mock return", () => {
-    const mock = jest.fn();
+test("mock return", () => {
+    const mock = jest.fn((x) => x * 10);
 
-    mock.mockReturnValueOnce("first call result")
-        .mockReturnValueOnce("second call result")
-        .mockReturnValue("default result");
+    mock.mockReturnValueOnce(1).mockReturnValueOnce(2);
 
-    expect(mock()).toBe("first call result");
-    expect(mock()).toBe("second call result");
-    expect(mock()).toBe("default result");
+    expect(mock(1)).toBe(1);
+    expect(mock(2)).toBe(2);
+    expect(mock(3)).toBe(30); // Return value will be the value return by the callback function defined above
+
+    mock.mockReturnValue(100);
+
+    expect(mock(3)).toBe(100); // Return value will be the value defined above
+});
+
+test("should fetch user", async () => {
+    const user = { name: "Bob" };
+    mockedAxios.get.mockResolvedValue({ data: user });
+
+    const data = await fetchUserById(849);
+    expect(data.name).toEqual("Bob");
 });
