@@ -7,6 +7,10 @@
     "scripts": {
         "test": "jest",
         "test--watch": "jest --watch-all",
+        "test--matchers": "jest --testPathPattern=src/jest/01_matchers",
+        "test--asynchronous": "jest --testPathPattern=src/jest/02_asynchronous",
+        "test--setup": "jest --testPathPattern=src/jest/03_setup --watch",
+        "test--mocks": "jest --testPathPattern=src/jest/04_mocks --watch",
         "build": "webpack",
         "start": "webpack serve --open"
     },
